@@ -3,22 +3,38 @@ import 'package:flutter/material.dart';
 import 'my_colors.dart';
 
 class ActivatedButton extends StatelessWidget {
-  const ActivatedButton({Key? key}) : super(key: key);
+  final Function? increment;
+  final Function? decrement;
+  final String? action;
+
+  get isIncrement => action == 'increment';
+
+  const ActivatedButton({
+    required this.action,
+    this.increment,
+    this.decrement,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return (TextButton(
-      onPressed: () {},
+      onPressed: () {
+        isIncrement ? increment!() : decrement!();
+      },
       child: SizedBox.fromSize(
         size: const Size(80, 25),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.person_add, color: MyColors.primaryLight2),
+            Icon(
+              isIncrement ? Icons.person_add : Icons.person_remove,
+              color: MyColors.primaryLight2,
+            ),
             const SizedBox(width: 5),
             Text(
-              'Entrou',
-              style: TextStyle(color: Colors.white),
+              isIncrement ? 'Entrou' : 'Saiu',
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
