@@ -1,5 +1,8 @@
+import 'package:customer_capacity_control/capacity_status.dart';
 import 'package:customer_capacity_control/disabled_button.dart';
+import 'package:customer_capacity_control/footer_text.dart';
 import 'package:customer_capacity_control/my_colors.dart';
+import 'package:customer_capacity_control/restaurant_logo.dart';
 import 'package:flutter/material.dart';
 
 import 'activated_button.dart';
@@ -26,7 +29,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int customerCapacity = 20;
+  final inputController = TextEditingController(text: '20');
+
   int customerQuantity = 0;
+  get isFull => customerQuantity >= customerCapacity;
+
+  @override
+  void dispose() {
+    inputController.dispose();
+    super.dispose();
+  }
 
   void addCustomer() {
     setState(() {
@@ -40,8 +53,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  get isFull => customerQuantity >= 10;
-
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
@@ -51,7 +62,40 @@ class _HomePageState extends State<HomePage> {
         child: IconButton(
           color: MyColors.primaryLight2,
           icon: const Icon(Icons.settings, size: 35),
-          onPressed: () {},
+          onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Lotação máxima'),
+              content: SizedBox(
+                height: 86,
+                child: Column(
+                  children: [
+                    const Text('Altere o valor da lotação máxima:'),
+                    TextField(
+                      controller: inputController,
+                      keyboardType: TextInputType.number,
+                      autofocus: true,
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () => {
+                    Navigator.pop(context, 'OK'),
+                    setState(() {
+                      customerCapacity = int.parse(inputController.text);
+                    })
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: Container(
@@ -66,29 +110,12 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Expanded(
-              flex: 5,
-              child: Image(image: AssetImage('assets/logo.png'), width: 150),
-            ),
+            const RestaurantLogo(),
             Expanded(
               flex: 6,
               child: Column(
                 children: [
-                  Text(
-                    isFull ? 'Entrada não permitida' : 'Entrada permitida!',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 23,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  Divider(
-                    height: 8,
-                    thickness: 2,
-                    indent: 130,
-                    endIndent: 130,
-                    color: MyColors.primaryLight2,
-                  ),
+                  CapacityStatus(isFull: isFull),
                   Text(
                     '$customerQuantity',
                     style: TextStyle(
@@ -97,41 +124,28 @@ class _HomePageState extends State<HomePage> {
                       fontSize: 100,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        customerQuantity > 0
-                            ? ActivatedButton(
-                                action: 'decrement',
-                                decrement: removeCustomer,
-                              )
-                            : const DisabledButton(buttonText: 'Saiu'),
-                        const SizedBox(width: 5),
-                        isFull
-                            ? const DisabledButton(buttonText: 'Entrou')
-                            : ActivatedButton(
-                                action: 'increment',
-                                increment: addCustomer,
-                              ),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      customerQuantity > 0
+                          ? ActivatedButton(
+                              action: 'decrement',
+                              decrement: removeCustomer,
+                            )
+                          : const DisabledButton(buttonText: 'Saiu'),
+                      const SizedBox(width: 5),
+                      isFull
+                          ? const DisabledButton(buttonText: 'Entrou')
+                          : ActivatedButton(
+                              action: 'increment',
+                              increment: addCustomer,
+                            ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const Expanded(
-              flex: 1,
-              child: Text(
-                'Siga os protocolos de segurança.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ),
+            const FooterText()
           ],
         ),
       ),

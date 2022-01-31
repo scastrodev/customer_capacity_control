@@ -9,10 +9,10 @@ class DisabledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (OutlinedButton(
+    return (TextButton(
       onPressed: null,
       child: SizedBox.fromSize(
-        size: const Size(70, 40),
+        size: const Size(80, 25),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
