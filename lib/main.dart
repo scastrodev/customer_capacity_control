@@ -65,16 +65,29 @@ class _HomePageState extends State<HomePage> {
           onPressed: () => showDialog<String>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              title: const Text('Lotação máxima'),
+              title: const Text(
+                'Lotação máxima',
+                style: TextStyle(color: Colors.white),
+              ),
               content: SizedBox(
                 height: 86,
                 child: Column(
                   children: [
-                    const Text('Altere o valor da lotação máxima:'),
+                    const Text(
+                      'Altere o valor da lotação máxima:',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     TextField(
                       controller: inputController,
                       keyboardType: TextInputType.number,
                       autofocus: true,
+                      style: const TextStyle(color: Colors.white),
+                      cursorColor: MyColors.primaryDark1,
+                      decoration: const InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -82,18 +95,34 @@ class _HomePageState extends State<HomePage> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancelar'),
+                  child: Text(
+                    'Cancelar',
+                    style: TextStyle(color: MyColors.primaryDark1),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => {
-                    Navigator.pop(context, 'OK'),
-                    setState(() {
-                      customerCapacity = int.parse(inputController.text);
-                    })
+                    customerCapacity = int.parse(inputController.text),
+                    if (customerCapacity > 0)
+                      {
+                        setState(() {
+                          customerCapacity = int.parse(inputController.text);
+                        }),
+                        setState(() {
+                          customerQuantity = 0;
+                        }),
+                        Navigator.pop(context, 'OK')
+                      }
+                    else
+                      {customerCapacity = 0}
                   },
-                  child: const Text('OK'),
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: MyColors.primaryDark1),
+                  ),
                 ),
               ],
+              backgroundColor: MyColors.primaryLight2,
             ),
           ),
         ),
